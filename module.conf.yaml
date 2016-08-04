@@ -1,0 +1,22 @@
+moduleConf:
+  clientId:
+  clientSecret:
+  username:
+  password: 
+
+  emailField: email
+
+  nameField: nome
+
+  remoteIdField: idRecipient
+
+  contactFields:
+      -
+        id: 1
+        name: nome
+      -
+        id: 2
+        name: cognome
+      -
+        id: 12
+        name: id

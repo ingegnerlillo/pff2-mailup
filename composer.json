@@ -1,0 +1,25 @@
+{
+	"name": "ingegnerlillo/pff2-mailup",
+	"type": "pff2-module",
+	"description": "Mailup integration",
+	"license": "MIT",
+	"keywords": [
+		"pff2", "module", "mailup"
+	],
+	"authors": [
+		{
+			"name": "Marco Sangiorgi",
+			"email": "marco.sangiorgi@neropaco.net",
+			"role": "Developer"
+		}
+	],
+	"homepage": "https://github.com/ingegnerlillo/pff2-mailup",
+	"require": {
+		"stonedz/pff2-installers": "*" 	
+	},
+    "autoload": {
+        "psr-4": {
+            "pff\\modules\\": "src/"
+        }
+    }
+}

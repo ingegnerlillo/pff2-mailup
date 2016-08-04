@@ -1,0 +1,4 @@
+name: Mailup
+version: "0.1"
+desc: Mailup integration
+class: Pff2Mailup
