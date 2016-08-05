@@ -2,7 +2,7 @@ moduleConf:
   clientId:
   clientSecret:
   username:
-  password: 
+  password:
 
   emailField: email
 

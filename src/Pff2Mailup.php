@@ -105,6 +105,11 @@ class Pff2Mailup extends AModule implements IConfigurableModule
         return $status;
     }
 
+    public function getClient(){
+        return $this->client;
+    }
+
+    /**  */
     private function getRequestUserData($user){
         $request = array();
         $request['Email'] = $this->getField($user, $this->emailField);
