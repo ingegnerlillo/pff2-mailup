@@ -59,6 +59,18 @@ class Pff2Mailup extends AModule implements IConfigurableModule
         return $token;
     }
 
+    public function getLists(){
+        $this->checkLogin();
+        $status = $this->client->getLists();
+        return $status;
+    }
+
+    public function getGroups($idList){
+        $this->checkLogin();
+        $status = $this->client->getGroups($idList);
+        return $status;
+    }
+
     public function subscribeToList(AModel $user, $idList = false){
         $this->checkLogin();
         $lists = $this->client->getLists();
