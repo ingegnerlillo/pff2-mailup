@@ -209,7 +209,8 @@ class MailUpClient {
         return $this->accessToken;
     }
 
-    function callMethod($url, $verb, $body = "", $contentType = "JSON", $refresh = true) {
+    function callMethod($url, $verb, $body = "", $contentType = "JSON", $refresh = true)
+    {
         $temp = null;
         $cType = ($contentType == "XML" ? "application/xml" : "application/json");
 
@@ -282,6 +283,12 @@ class MailUpClient {
         return $lists->Items;
     }
 
+    function getListRecipients($idList, $pageNumber = 0){
+        $url = $this->consoleEndpoint . "/Console/List/".$idList."/Recipients/EmailOptins?PageNumber=".$pageNumber;
+        $result = $this->callMethod($url, "GET", null, "JSON");
+        return $result;
+    }
+
     /**
      * @param $request
      * @param $listId
@@ -290,6 +297,12 @@ class MailUpClient {
      */
     function subscribeToList($request, $listId){
         $url = $this->consoleEndpoint . "/Console/List/".$listId."/Recipient";
+        $result = $this->callMethod($url, "POST", $request, "JSON");
+        return $result;
+    }
+
+    function doBulkGroupExport($request, $idGroup){
+        $url = $this->consoleEndpoint . "/Console/Group/".$idGroup."/Recipients";
         $result = $this->callMethod($url, "POST", $request, "JSON");
         return $result;
     }
@@ -309,6 +322,12 @@ class MailUpClient {
     function unsubscribeFromList($idRecipient, $listId){
         $url = $this->consoleEndpoint . "/Console/List/".$listId."/Unsubscribe/".$idRecipient;
         $result = $this->callMethod($url, "DELETE");
+        return $result;
+    }
+
+    function checkImport($idImport){
+        $url = $this->consoleEndpoint . "/Console/Import/".$idImport;
+        $result = $this->callMethod($url, "GET", null, "JSON");
         return $result;
     }
 }

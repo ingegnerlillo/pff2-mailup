@@ -50,7 +50,7 @@ class Pff2Mailup extends AModule implements IConfigurableModule
         $this->contactFields = $conf['moduleConf']['contactFields'];
     }
 
-    private function checkLogin(){
+    public function checkLogin(){
         if(!$this->client->checkToken()){
             $token = $this->client->retreiveAccessToken($this->username, $this->password);
         }else{
@@ -71,35 +71,35 @@ class Pff2Mailup extends AModule implements IConfigurableModule
         return $status;
     }
 
-    public function subscribeToList(AModel $user, $idList = false){
+    public function subscribeToList(AModel $user, $idList){
         $this->checkLogin();
-        $lists = $this->client->getLists();
-        if(!$idList){
-            $listId = $lists[0]->idList;
-        }else{
-            if(is_int($idList)){
-                $listId = $idList;
-            }else{
-                foreach($lists as $l){
-                    if($l->Name == $idList){
-                        $listId = $l->idList;
-                    }
-                }
-            }
-        }
         $request = $this->getRequestUserData($user);
-        $status = $this->client->subscribeToList($request, $listId);
+        try{
+            $status = $this->client->subscribeToList($request, $idList);
+        }catch (\Exception $e){
+            throw $e;
+        }
+        /** @var EntityManager $em */
+        $em = ServiceContainer::get("dm");
+        $this->setField($user, $this->remoteIdField, (int)trim($status));
+        $em->flush();
+        $em->clear();
         return $status;
     }
 
     public function subscribeToGroup(AModel $user, $idGroup){
         $this->checkLogin();
         $request = $this->getRequestUserData($user);
-        $status = $this->client->subscribeToGroup($request, $idGroup);
+        try{
+            $status = $this->client->subscribeToGroup($request, $idGroup);
+        }catch(\Exception $e){
+            throw $e;
+        }
         /** @var EntityManager $em */
         $em = ServiceContainer::get("dm");
-        $this->setField($user, $this->remoteIdField, $status);
-        $em->flush($user);
+        $this->setField($user, $this->remoteIdField, (int)trim($status));
+        $em->flush();
+        $em->clear();
         return $status;
     }
 
@@ -121,21 +121,37 @@ class Pff2Mailup extends AModule implements IConfigurableModule
         return $this->client;
     }
 
+    public function doBulkGroupExport($idGroup, $users){
+        $this->checkLogin();
+        $toExport = array();
+        foreach($users as $u){
+            $tmp = $this->getRequestUserData($u, false);
+            array_push($toExport, $tmp);
+        }
+        $status = $this->client->doBulkGroupExport(json_encode($toExport), $idGroup);
+        return $status;
+    }
+
     /**  */
-    private function getRequestUserData($user){
+    private function getRequestUserData($user, $json = true){
         $request = array();
         $request['Email'] = $this->getField($user, $this->emailField);
         $request['Name'] = $this->getField($user, $this->nameField);
         $request['Fields'] = array();
         foreach($this->contactFields as $field){
-            $request['Fields'][$field['name']] =  $this->getField($user, $field['name']);
+            $tmp = array();
+            $tmp['Description'] = $field['name'];
+            $tmp['Id'] = $field['id'];
+            $tmp['Value'] = $this->getField($user, $field['name']);
+            array_push($request['Fields'],$tmp);
         }
-        $request = json_encode($request, JSON_FORCE_OBJECT);
+        $request = $json ? json_encode($request) : $request;
         return $request;
     }
 
     private function getField(AModel $user, $field){
-        return call_user_func(array($user,"get".ucfirst($field)));
+        $toReturn = call_user_func(array($user,"get".ucfirst($field)));
+        return $toReturn ?: "-";
     }
 
     private function setField(AModel $user, $field, $value){
