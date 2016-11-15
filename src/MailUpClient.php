@@ -294,6 +294,8 @@ class MailUpClient {
      * @param $listId
      * @return integer id_user
      * @throws \Exception
+     *
+     * ADDS AN USER TO A LIST
      */
     function subscribeToList($request, $listId){
         $url = $this->consoleEndpoint . "/Console/List/".$listId."/Recipient";
@@ -301,24 +303,56 @@ class MailUpClient {
         return $result;
     }
 
+    /**
+     * @param $request
+     * @param $idGroup
+     * @return mixed
+     * @throws \Exception
+     *
+     * EXPORT A BULK OF CONTACTS FROM GROUP
+     */
     function doBulkGroupExport($request, $idGroup){
         $url = $this->consoleEndpoint . "/Console/Group/".$idGroup."/Recipients";
         $result = $this->callMethod($url, "POST", $request, "JSON");
         return $result;
     }
 
+    /**
+     * @param $request
+     * @param $groupId
+     * @return mixed
+     * @throws \Exception
+     *
+     * SUBSCRIBE A RECIPIENT TO A GROUP
+     */
     function subscribeToGroup($request, $groupId){
         $url = $this->consoleEndpoint . "/Console/Group/".$groupId."/Recipient";
         $result = $this->callMethod($url, "POST", $request, "JSON");
         return $result;
     }
 
+    /**
+     * @param $idRecipient
+     * @param $groupId
+     * @return mixed
+     * @throws \Exception
+     *
+     * UNSUBSCRIBE A RECIPIENT FROM A GROUP
+     */
     function unsubscribeFromGroup($idRecipient, $groupId){
         $url = $this->consoleEndpoint . "/Console/Group/".$groupId."/Unsubscribe/".$idRecipient;
         $result = $this->callMethod($url, "DELETE");
         return $result;
     }
 
+    /**
+     * @param $idRecipient
+     * @param $listId
+     * @return mixed
+     * @throws \Exception
+     *
+     * UNSUBSCRIBE A RECIPIENT FROM A LIST
+     */
     function unsubscribeFromList($idRecipient, $listId){
         $url = $this->consoleEndpoint . "/Console/List/".$listId."/Unsubscribe/".$idRecipient;
         $result = $this->callMethod($url, "DELETE");
@@ -331,5 +365,3 @@ class MailUpClient {
         return $result;
     }
 }
-
-?>

@@ -50,6 +50,12 @@ class Pff2Mailup extends AModule implements IConfigurableModule
         $this->contactFields = $conf['moduleConf']['contactFields'];
     }
 
+    /**
+     * @return mixed
+     * @throws \Exception
+     *
+     * CHECK LOGIN TO MAILUP
+     */
     public function checkLogin(){
         if(!$this->client->checkToken()){
             $token = $this->client->retreiveAccessToken($this->username, $this->password);
@@ -59,18 +65,37 @@ class Pff2Mailup extends AModule implements IConfigurableModule
         return $token;
     }
 
+    /**
+     * @return mixed
+     *
+     * GETS AN ARRAY OF LISTS
+     */
     public function getLists(){
         $this->checkLogin();
         $status = $this->client->getLists();
         return $status;
     }
 
+    /**
+     * @param $idList
+     * @return mixed
+     *
+     * GETS AN ARRAY OF GROUPS
+     */
     public function getGroups($idList){
         $this->checkLogin();
         $status = $this->client->getGroups($idList);
         return $status;
     }
 
+    /**
+     * @param AModel $user
+     * @param $idList
+     * @return int
+     * @throws \Exception
+     *
+     * SUBSCRIBE AN USER TO A LIST
+     */
     public function subscribeToList(AModel $user, $idList){
         $this->checkLogin();
         $request = $this->getRequestUserData($user);
@@ -87,6 +112,14 @@ class Pff2Mailup extends AModule implements IConfigurableModule
         return $status;
     }
 
+    /**
+     * @param AModel $user
+     * @param $idGroup
+     * @return mixed
+     * @throws \Exception
+     *
+     * SUBSCRIBE AN USER TO A GROUP, AND TO THE LIST IT BELONGS TO
+     */
     public function subscribeToGroup(AModel $user, $idGroup){
         $this->checkLogin();
         $request = $this->getRequestUserData($user);
@@ -103,6 +136,13 @@ class Pff2Mailup extends AModule implements IConfigurableModule
         return $status;
     }
 
+    /**
+     * @param AModel $user
+     * @param $idGroup
+     * @return mixed
+     *
+     * UNSUBSCRIBE AN USER FROM A GROUP, BUT NOT FROM THE LIST
+     */
     public function unsubscribeFromGroup(AModel $user, $idGroup){
         $this->checkLogin();
         $idRemote = $this->getField($user, $this->remoteIdField);
@@ -110,6 +150,13 @@ class Pff2Mailup extends AModule implements IConfigurableModule
         return $status;
     }
 
+    /**
+     * @param AModel $user
+     * @param $idList
+     * @return mixed
+     *
+     * UNSUBSCRIBE AN USER FROM A LIST
+     */
     public function unsubscribeFromList(AModel $user, $idList){
         $this->checkLogin();
         $idRemote = $this->getField($user, $this->remoteIdField);
@@ -121,6 +168,13 @@ class Pff2Mailup extends AModule implements IConfigurableModule
         return $this->client;
     }
 
+    /**
+     * @param $idGroup
+     * @param $users
+     * @return mixed
+     *
+     * EXPORT A BULK OF DATA TO A GROUP
+     */
     public function doBulkGroupExport($idGroup, $users){
         $this->checkLogin();
         $toExport = array();
@@ -132,7 +186,7 @@ class Pff2Mailup extends AModule implements IConfigurableModule
         return $status;
     }
 
-    /**  */
+    /** RETURN A JSON WITH USER FIELDS FOR CONTACT UPDATE  */
     private function getRequestUserData($user, $json = true){
         $request = array();
         $request['Email'] = $this->getField($user, $this->emailField);
